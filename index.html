@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A surprise for you</title>
+<meta name="description" content="Tap to open.">
+<meta property="og:title" content="A surprise for you">
+<meta property="og:description" content="Tap to open.">
+<meta name="twitter:card" content="summary">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1d1015">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1d1015;--gold:#f0c43c;--paper:#fbf5e6;--pen:#2b2140;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(circle at 50% 45%,#2d1a22,var(--bg) 70%);color:var(--gold);font-family:"Playfair Display",Georgia,serif;overflow:hidden}
+.stage{position:absolute;inset:0}
+.glow{position:absolute;left:50%;top:46%;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,rgba(255,225,140,.7),rgba(255,180,80,.18) 42%,transparent 68%)}
+.say{position:absolute;left:0;right:0;top:calc(46% + min(190px,22vh) + 10px);text-align:center;transition:opacity .4s}
+.say p{margin:0;font-size:1.15rem;letter-spacing:.02em}
+.pips{display:flex;justify-content:center;gap:8px;margin-top:16px}
+.pips span{width:22px;height:3px;border-radius:2px;background:#f0c43c33;transition:background .4s}
+.pips span.on{background:var(--gold)}
+
+.gift{position:absolute;left:50%;top:46%;translate:-50% -50%;width:min(calc(var(--s)*1px),72vw);aspect-ratio:340/330;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.gift:focus-visible{outline:3px solid var(--gold);outline-offset:10px;border-radius:12px}
+.gift.busy{cursor:default}
+.art{width:100%;height:100%;overflow:visible;display:block;transform-origin:50% 100%}
+.gift:not(.busy):hover .art{animation:rumble .35s linear infinite}
+@keyframes rumble{25%{transform:translate(-2px,1px) rotate(-.8deg)}75%{transform:translate(2px,-1px) rotate(.8deg)}}
+
+.box{fill:var(--box);stroke:#fff;stroke-width:3.5;stroke-linejoin:round}
+.rib{fill:url(#gold);stroke:#fff;stroke-width:3.5;stroke-linejoin:round}
+.pat{fill:url(#stars);pointer-events:none}
+.hole{fill:url(#lit);opacity:0;transition:opacity .3s}
+.open .hole{opacity:1}
+.line,.string{fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round}
+.line{stroke-width:4}.string{stroke-width:3.2}
+.knot{fill:var(--box);stroke:#fff;stroke-width:3}
+.bow{transform-origin:200px 152px;animation:wig 2.6s ease-in-out infinite}
+.untie .bow{animation:none}
+@keyframes wig{50%{transform:rotate(2deg) scale(1.02)}}
+.strandL,.strandR{transform-origin:200px 152px}
+.lid{transform-origin:200px 212px}
+.body{transform-origin:200px 362px}
+.rays{fill:#ffe9a8;opacity:0;transform-origin:200px 212px;pointer-events:none}
+.twk{fill:none;stroke:var(--gold);stroke-width:1.6}
+
+.sp{position:fixed;left:0;top:0;width:11px;height:11px;margin:-5px;pointer-events:none;background:var(--gold);
+  clip-path:polygon(50% 0,61% 35%,98% 38%,68% 59%,79% 91%,50% 72%,21% 91%,32% 59%,2% 38%,39% 35%)}
+
+.final{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;pointer-events:none;padding:20px}
+.big{margin:0;display:flex;font-family:"Playfair Display",Georgia,serif;font-weight:600;font-size:clamp(3rem,16vw,8.5rem);line-height:1;letter-spacing:.02em;white-space:nowrap}
+.big span{display:inline-block;opacity:0;transform:translateY(60px) scale(.2) rotate(-14deg);
+  background:linear-gradient(180deg,#fff3b0,#f0c43c 55%,#b98f1c);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 18px rgba(240,196,60,.55));
+  transition:transform .9s cubic-bezier(.2,1.4,.4,1) calc(var(--i)*.09s),opacity .5s calc(var(--i)*.09s)}
+.big .sp-gap{width:.35em}
+.final.show .big span{opacity:1;transform:none}
+.final.show .big{animation:pulse 2.4s 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.04)}}
+button.again{font-family:"Playfair Display",Georgia,serif;font-size:.95rem;border:1.5px solid var(--gold);background:transparent;color:var(--gold);padding:9px 20px;border-radius:999px;cursor:pointer;
+  opacity:0;transition:opacity .6s 1.6s,background .2s,color .2s}
+.final.show button.again{opacity:1;pointer-events:auto}
+button.again:hover{background:var(--gold);color:#1d1015}
+button.again:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.final.show .big{animation:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0.3">
+    <stop offset="0" stop-color="#b98f1c"/><stop offset=".3" stop-color="#f6e27a"/><stop offset=".55" stop-color="#d3a82a"/>
+    <stop offset=".8" stop-color="#f3dc6a"/><stop offset="1" stop-color="#b98f1c"/></linearGradient>
+  <linearGradient id="lit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff7c8"/><stop offset="1" stop-color="#f0c43c"/></linearGradient>
+  <pattern id="stars" width="48" height="48" patternUnits="userSpaceOnUse">
+    <path class="twk" transform="translate(14 14)" d="M0-7 2-2.3 7-2.2 3.2 1 4.4 6 0 3.2-4.4 6-3.2 1-7-2.2-2-2.3Z"/>
+    <path class="twk" transform="translate(38 36) rotate(18)" d="M0-7 2-2.3 7-2.2 3.2 1 4.4 6 0 3.2-4.4 6-3.2 1-7-2.2-2-2.3Z"/></pattern>
+</defs></svg>
+
+<main class="stage" id="stage"><div class="glow" id="glow"></div></main>
+
+
+<div class="final" id="letter" aria-live="polite">
+  <h1 class="big" aria-label="Ligo na"><span style="--i:0">L</span><span style="--i:1">I</span><span style="--i:2">G</span><span style="--i:3">O</span><span class="sp-gap" style="--i:4"></span><span style="--i:5">N</span><span style="--i:6">A</span></h1>
+  <button class="again" id="again">Open it again</button>
+</div>
+
+<script>
+// Big to small. s = width in px, box = box colour. Add or remove entries to change the number of boxes.
+const GIFTS=[{s:310,box:'#d8161d'},{s:262,box:'#1d6fb8'},{s:218,box:'#7b3fc4'},{s:178,box:'#1f8a4c'},{s:142,box:'#d9680f'}];
+const stage=document.getElementById('stage'),letter=document.getElementById('letter'),glow=document.getElementById('glow');
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const ease={io:t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,out:t=>1-Math.pow(1-t,3)};
+let level=0,busy=false;
+
+/* ---------- tiny tween helper ---------- */
+function tween(o,to,ms,e=ease.io){return new Promise(res=>{
+  const from={};for(const k in to)from[k]=o[k];const t0=performance.now();
+  (function step(now){const p=Math.min(1,(now-t0)/ms),q=e(p);
+    for(const k in to)o[k]=from[k]+(to[k]-from[k])*q;p<1?requestAnimationFrame(step):res()})(t0)})}
+
+/* ---------- artwork ---------- */
+const RAYS=[-72,-48,-24,0,24,48,72].map(a=>{const r=Math.PI/180,P=d=>`${200+300*Math.sin((a+d)*r)},${212-300*Math.cos((a+d)*r)}`;
+  return `<polygon points="200,212 ${P(-5)} ${P(5)}"/>`}).join('');
+const lidParts=`<rect class="box" x="50" y="150" width="300" height="62"/><rect class="pat" x="50" y="150" width="300" height="62"/><rect class="rib" x="150" y="150" width="100" height="62"/>`;
+const art=`<svg class="art" viewBox="30 40 340 330">
+  <g class="body"><rect class="box" x="72" y="212" width="256" height="150"/><rect class="pat" x="72" y="212" width="256" height="150"/>
+    <rect class="hole" x="72" y="212" width="256" height="20"/><rect class="rib" x="150" y="212" width="100" height="150"/></g>
+  <g class="rays">${RAYS}</g>
+  <g class="lid">${lidParts}</g>
+  <g class="bow"><g class="strandL"><path class="line sL"/></g><g class="strandR"><path class="line sR"/></g><circle class="knot" cx="200" cy="152" r="7"/></g>
+  <path class="string"/>
+</svg>`;
+
+/* bow loop control points: [start, c1, c2, end, c3, c4, close]; mirrored for the right side */
+const LOOP=[200,152,176,108,126,62,118,98,112,126,170,142,200,152];
+const HANG=[200,152,192,172,160,200,148,240,158,206,184,176,204,158];
+const mix=(a,b,p)=>a.map((v,i)=>v+(b[i]-v)*p);
+const mirror=a=>a.map((v,i)=>i%2?v:400-v);
+const toD=a=>`M${a[0]} ${a[1]}C${a[2]} ${a[3]} ${a[4]} ${a[5]} ${a[6]} ${a[7]}C${a[8]} ${a[9]} ${a[10]} ${a[11]} ${a[12]} ${a[13]}`;
+
+/* every gift keeps a small state object that the frame loop draws */
+const live=new Set();let last=performance.now();
+function draw(st,dt){
+  st.phase+=st.speed*dt;
+  const n=Math.max(2,Math.ceil((st.yEnd-152)/6));let d='';
+  for(let i=0;i<=n;i++){
+    const y=152+(st.yEnd-152)*i/n,env=Math.min(1,(y-152)/50);
+    const x=200+st.amp*Math.sin((y-152)*.05-st.phase)*env;
+    d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+  }
+  st.string.setAttribute('d',d);
+  const a=mix(LOOP,HANG,st.p);
+  st.sL.setAttribute('d',toD(a));st.sR.setAttribute('d',toD(mirror(a)));
+  st.knot.setAttribute('r',Math.max(0,7*(1-st.p*1.4)));
+}
+(function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;live.forEach(s=>draw(s,dt));requestAnimationFrame(frame)})(last);
+
+function makeGift(i){
+  const g=GIFTS[i],el=document.createElement('div');
+  el.className='gift';el.tabIndex=0;el.setAttribute('role','button');
+  el.setAttribute('aria-label','Open gift '+(i+1)+' of '+GIFTS.length);
+  el.style.cssText=`--s:${g.s};--box:${g.box}`;el.innerHTML=art;stage.appendChild(el);
+  const q=s=>el.querySelector(s);
+  const st=el._st={yEnd:352,amp:7,speed:1.4,phase:0,p:0,string:q('.string'),sL:q('.sL'),sR:q('.sR'),knot:q('.knot')};
+  live.add(st);draw(st,0);
+  // springy pop-in: the first box fades in, later boxes spring up out of the one before
+  el.animate(i?[{transform:'translateY(90px) scale(.25)',opacity:0},{transform:'translateY(-34px) scale(1.12)',opacity:1,offset:.55},
+      {transform:'translateY(6px) scale(.97)',offset:.78},{transform:'none'}]
+    :[{transform:'scale(.7)',opacity:0},{transform:'none',opacity:1}],{duration:i?1100:700,easing:'ease-out',fill:'backwards'});
+  el.addEventListener('click',()=>openGift(el));
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openGift(el)}});
+}
+
+function burst(el,n,big){
+  const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height*.4,cols=['#f0c43c','#fff','#ffe9a8','#ff7b7b'];
+  for(let k=0;k<n;k++){
+    const s=document.createElement('span');s.className='sp';s.style.background=cols[k%cols.length];document.body.appendChild(s);
+    const a=-Math.PI/2+(Math.random()-.5)*(big?5:3),d=(big?260:150)*(.4+Math.random()),dx=Math.cos(a)*d,dy=Math.sin(a)*d;
+    s.animate([{transform:`translate(${x}px,${y}px) scale(.4)`,opacity:1},
+      {transform:`translate(${x+dx}px,${y+dy}px) scale(1.5) rotate(160deg)`,opacity:1,offset:.45},
+      {transform:`translate(${x+dx*1.15}px,${y+dy+160}px) scale(0) rotate(320deg)`,opacity:0}],
+      {duration:1300+Math.random()*800,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>s.remove();
+  }
+  glow.animate([{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)',offset:.35},{opacity:0,transform:'scale(1.15)'}],{duration:1500,easing:'ease-out'});
+}
+
+async function openGift(el){
+  if(busy)return;busy=true;el.classList.add('busy');
+  const q=s=>el.querySelector(s),st=el._st;
+  // 1. anticipation: box crouches, string starts to tremble
+  q('.art').animate([{transform:'none'},{transform:'scale(1.05,.93)'},{transform:'scale(.98,1.03)'},{transform:'none'}],{duration:520,easing:'ease-in-out'});
+  await tween(st,{amp:13,speed:12},450);
+  // 2. the string is pulled up through the ribbon, waving as it goes
+  tween(st,{amp:5},1100);
+  await tween(st,{yEnd:156},1100);
+  q('.string').animate([{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-40px)'}],{duration:350,easing:'ease-out',fill:'forwards'});
+  // 3. the bow loosens: loops stretch into ribbon ends and the knot shrinks away
+  el.classList.add('untie');
+  await tween(st,{p:1},800,ease.out);
+  q('.strandL').animate([{transform:'none',opacity:1},{transform:'translate(-90px,150px) rotate(-35deg)',opacity:0}],{duration:800,easing:'ease-in',fill:'forwards'});
+  q('.strandR').animate([{transform:'none',opacity:1},{transform:'translate(90px,150px) rotate(35deg)',opacity:0}],{duration:800,easing:'ease-in',fill:'forwards'});
+  await wait(350);
+  // 4. the lid squashes, springs up, wobbles, then tumbles off
+  el.classList.add('open');
+  q('.body').animate([{transform:'none'},{transform:'scale(1.03,.95)',offset:.15},{transform:'scale(.98,1.04)',offset:.42},{transform:'none'}],{duration:900,easing:'ease-out'});
+  q('.lid').animate([
+    {transform:'none'},
+    {transform:'translateY(6px) scale(1.03,.92)',offset:.1},
+    {transform:'translateY(-64px) rotate(-3deg) scale(.97,1.06)',offset:.34},
+    {transform:'translateY(-52px) rotate(-9deg)',offset:.5},
+    {transform:'translate(-175px,-24px) rotate(-30deg)',offset:.74},
+    {transform:'translate(-285px,330px) rotate(-85deg)',opacity:0}],{duration:1500,easing:'ease-in-out',fill:'forwards'});
+  await wait(260);
+  q('.rays').animate([{opacity:0,transform:'scale(.2) rotate(-8deg)'},{opacity:.85,transform:'scale(1)',offset:.3},{opacity:0,transform:'scale(1.15) rotate(8deg)'}],{duration:1500,easing:'ease-out'});
+  burst(el,26,false);
+  await wait(950);
+  level++;
+  if(level<GIFTS.length){
+    el.animate([{transform:'none'},{transform:'translateY(-14px) scale(1.04)',offset:.2},{transform:'translateY(340px) rotate(6deg) scale(1.2)',opacity:0}],{duration:900,easing:'ease-in',fill:'forwards'});
+    makeGift(level);
+    await wait(950);live.delete(st);el.remove();busy=false;
+  }else{
+    el.animate([{transform:'none'},{transform:'translateY(340px) rotate(6deg) scale(1.2)',opacity:0}],{duration:900,easing:'ease-in',fill:'forwards'});
+    burst(el,54,true);await wait(450);letter.classList.add('show');
+    await wait(900);live.delete(st);el.remove();
+  }
+}
+document.getElementById('again').addEventListener('click',async()=>{
+  letter.classList.remove('show');await wait(700);
+  level=0;busy=false;makeGift(0);
+});
+makeGift(0);
+</script>
+</body>
+</html>
